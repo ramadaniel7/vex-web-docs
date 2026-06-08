@@ -1,1013 +1,285 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>VEX Anti-Cheat — Dashboard</title>
-<style>
-  /* ─── Reset & Base ─────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --accent:   #00ff88;
-    --accent2:  #00b4ff;
-    --accent3:  #a855f7;
-    --red:      #ff4444;
-    --orange:   #ff8800;
-    --bg:       #080c18;
-    --bg2:      #0d1225;
-    --glass:    rgba(255,255,255,0.04);
-    --glass2:   rgba(255,255,255,0.08);
-    --border:   rgba(0,255,136,0.2);
-    --border2:  rgba(0,180,255,0.2);
-    --text:     #e2eaff;
-    --text2:    #7a90c0;
-    --text3:    #3a4a70;
-    --shadow:   0 8px 32px rgba(0,255,136,0.08);
-    --font:     'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal & Compliance - VEX Security</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #161925;
+      --text: #f8f9fa;
+      --text2: #94a3b8;
+      --accent-tos: #00e676;
+      --accent-privacy: #ff9100;
+      --border: #24293e;
+      --red: #ff4d4d;
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+    }
 
-  html { scroll-behavior: smooth; }
+    /* Tabs Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 35px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 20px;
+    }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
 
-  /* ─── Liquid Background ──────────────────────────────────── */
-  .liquid-bg {
-    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  }
-  .orb {
-    position: absolute; border-radius: 50%;
-    filter: blur(80px); opacity: 0.12; animation: float 8s ease-in-out infinite;
-  }
-  .orb1 { width:500px; height:500px; background:var(--accent);  top:-200px; left:-150px; animation-delay:0s; }
-  .orb2 { width:400px; height:400px; background:var(--accent2); bottom:-150px; right:-100px; animation-delay:-3s; }
-  .orb3 { width:300px; height:300px; background:var(--accent3); top:40%; left:60%; animation-delay:-5s; }
-  .orb4 { width:250px; height:250px; background:var(--accent);  top:60%; left:10%; animation-delay:-2s; }
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+      border-color: #3b4261;
+    }
 
-  @keyframes float {
-    0%,100% { transform: translate(0,0) scale(1); }
-    25% { transform: translate(30px,-20px) scale(1.05); }
-    50% { transform: translate(-20px,30px) scale(0.95); }
-    75% { transform: translate(20px,20px) scale(1.02); }
-  }
+    /* Active States Router */
+    body.route-terms #btn-terms {
+      color: #000;
+      background: var(--accent-tos);
+      border-color: var(--accent-tos);
+      box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
+    }
+    body.route-privacy #btn-privacy {
+      color: #000;
+      background: var(--accent-privacy);
+      border-color: var(--accent-privacy);
+      box-shadow: 0 0 15px rgba(255, 145, 0, 0.3);
+    }
 
-  /* Grid noise texture */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
+    /* Content Area */
+    .policy-content { display: none; }
+    body.route-terms #terms-section { display: block; animation: fadeIn 0.3s ease; }
+    body.route-privacy #privacy-section { display: block; animation: fadeIn 0.3s ease; }
 
-  /* ─── Layout ─────────────────────────────────────────────── */
-  .root { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  /* ─── Sidebar ────────────────────────────────────────────── */
-  .sidebar {
-    width: 240px; min-height: 100vh; padding: 24px 16px;
-    background: rgba(10,14,26,0.8);
-    border-right: 1px solid var(--border);
-    backdrop-filter: blur(20px);
-    display: flex; flex-direction: column; gap: 8px;
-    position: sticky; top: 0; height: 100vh; overflow-y: auto;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-  }
+    /* Typography Styling */
+    h1 { 
+      font-size: 2.2rem; 
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .meta-date {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 30px;
+      font-family: monospace;
+    }
+    h2 { 
+      margin-top: 35px; 
+      font-size: 1.4rem; 
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+    .tos-accent { color: var(--accent-tos); }
+    .privacy-accent { color: var(--accent-privacy); }
+    
+    p { 
+      color: var(--text2); 
+      font-size: 15px; 
+      margin-bottom: 16px;
+      text-align: justify;
+    }
+    
+    ul, ol { 
+      padding-left: 25px; 
+      margin-bottom: 20px;
+    }
+    li { 
+      color: var(--text2); 
+      font-size: 15px; 
+      margin-bottom: 8px;
+    }
+    
+    .mono {
+      font-family: monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #e2e8f0;
+      font-size: 13px;
+    }
 
-  .logo {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px 20px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 8px;
-  }
-  .logo-icon {
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; box-shadow: 0 0 20px rgba(0,255,136,0.3);
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  @keyframes pulse-glow {
-    0%,100% { box-shadow: 0 0 20px rgba(0,255,136,0.3); }
-    50%      { box-shadow: 0 0 35px rgba(0,255,136,0.6); }
-  }
-  .logo-text { line-height: 1.2; }
-  .logo-text b { font-size: 16px; color: var(--accent); letter-spacing: 2px; }
-  .logo-text span { font-size: 10px; color: var(--text2); display: block; }
+    blockquote {
+      background: rgba(255, 77, 77, 0.05);
+      border-left: 4px solid var(--red);
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    blockquote p { color: #fca5a5; margin-bottom: 0; font-size: 14px; }
+    
+    .footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 12px;
+      color: #4b5563;
+      border-top: 1px solid var(--border);
+      padding-top: 25px;
+    }
 
-  .nav-section { font-size: 10px; color: var(--text3); letter-spacing: 2px; padding: 8px 12px 4px; text-transform: uppercase; }
-
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: 10px; cursor: pointer;
-    color: var(--text2); font-size: 13px; font-weight: 500;
-    transition: all 0.2s; border: 1px solid transparent;
-    text-decoration: none;
-  }
-  .nav-item:hover { background: var(--glass2); color: var(--text); border-color: var(--border); }
-  .nav-item.active {
-    background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,180,255,0.1));
-    color: var(--accent); border-color: var(--border);
-    box-shadow: 0 0 15px rgba(0,255,136,0.1);
-  }
-  .nav-item .icon { font-size: 16px; width: 22px; text-align: center; }
-
-  .sidebar-footer {
-    margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border);
-    font-size: 11px; color: var(--text3); text-align: center; line-height: 1.6;
-  }
-
-  /* ─── Main Content ───────────────────────────────────────── */
-  .main {
-    flex: 1; padding: 28px; overflow-y: auto; min-width: 0;
-  }
-
-  .page { display: none; animation: fadeIn 0.3s ease; }
-  .page.active { display: block; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
-
-  /* ─── Top Bar ────────────────────────────────────────────── */
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
-  }
-  .page-title { font-size: 22px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
-  .page-title span { font-size: 24px; }
-  .page-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
-  .status-badge {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 14px; border-radius: 20px;
-    background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3);
-    font-size: 12px; color: var(--accent); font-weight: 600;
-  }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.5s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  /* ─── Stats Grid ─────────────────────────────────────────── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px; margin-bottom: 28px;
-  }
-
-  .stat-card {
-    background: var(--glass); backdrop-filter: blur(16px);
-    border: 1px solid var(--border); border-radius: 16px;
-    padding: 20px 18px; position: relative; overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: default;
-  }
-  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,255,136,0.1); }
-  .stat-card::before {
-    content:''; position:absolute; inset:0; border-radius:16px;
-    background: linear-gradient(135deg, var(--glass2), transparent);
-    pointer-events:none;
-  }
-  .stat-icon { font-size: 28px; margin-bottom: 10px; display: block; }
-  .stat-val { font-size: 32px; font-weight: 800; color: var(--accent); line-height:1; }
-  .stat-val.red { color: var(--red); }
-  .stat-val.blue { color: var(--accent2); }
-  .stat-val.purple { color: var(--accent3); }
-  .stat-val.orange { color: var(--orange); }
-  .stat-label { font-size: 11px; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
-
-  /* ─── Cards ──────────────────────────────────────────────── */
-  .card {
-    background: var(--glass); backdrop-filter: blur(16px);
-    border: 1px solid var(--border); border-radius: 16px;
-    padding: 22px; margin-bottom: 20px; position: relative; overflow: hidden;
-  }
-  .card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
-  }
-  .card-title { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-  .card-title::before { content: ''; display: inline-block; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; margin-right: 8px; vertical-align: middle; }
-
-  /* ─── Form Elements ──────────────────────────────────────── */
-  .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
-  .form-label { font-size: 11px; color: var(--text2); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-
-  input, select, textarea {
-    background: rgba(8,12,24,0.8); border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 14px;
-    color: var(--text); font-size: 13px; font-family: var(--font);
-    transition: border-color 0.2s, box-shadow 0.2s; outline: none; width: 100%;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,255,136,0.1);
-  }
-  input::placeholder, textarea::placeholder { color: var(--text3); }
-  select option { background: var(--bg2); }
-
-  /* ─── Buttons ────────────────────────────────────────────── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 20px; border-radius: 10px; border: none;
-    font-size: 13px; font-weight: 700; cursor: pointer;
-    transition: all 0.2s; letter-spacing: 0.5px; font-family: var(--font);
-    white-space: nowrap;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #000; box-shadow: 0 4px 20px rgba(0,255,136,0.3);
-  }
-  .btn-primary:hover { box-shadow: 0 6px 28px rgba(0,255,136,0.5); transform: translateY(-1px); }
-  .btn-danger { background: rgba(255,68,68,0.2); color: var(--red); border: 1px solid rgba(255,68,68,0.3); }
-  .btn-danger:hover { background: rgba(255,68,68,0.35); }
-  .btn-ghost { background: var(--glass2); color: var(--text2); border: 1px solid var(--border); }
-  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-  .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
-
-  /* ─── Table ──────────────────────────────────────────────── */
-  .table-wrap { overflow-x: auto; border-radius: 12px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    background: rgba(0,255,136,0.06); color: var(--text2); font-size: 11px;
-    text-transform: uppercase; letter-spacing: 1px; padding: 12px 14px;
-    text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap;
-  }
-  td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--glass); }
-  .mono { font-family: 'Courier New', monospace; font-size: 12px; color: var(--accent2); }
-
-  /* Badges */
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-  }
-  .badge-green  { background: rgba(0,255,136,0.15); color: var(--accent); border: 1px solid rgba(0,255,136,0.3); }
-  .badge-red    { background: rgba(255,68,68,0.15);  color: var(--red);    border: 1px solid rgba(255,68,68,0.3); }
-  .badge-orange { background: rgba(255,136,0,0.15);  color: var(--orange); border: 1px solid rgba(255,136,0,0.3); }
-  .badge-blue   { background: rgba(0,180,255,0.15);  color: var(--accent2);border: 1px solid rgba(0,180,255,0.3); }
-  .badge-purple { background: rgba(168,85,247,0.15); color: var(--accent3);border: 1px solid rgba(168,85,247,0.3); }
-
-  /* ─── Severity colors for violation types ────────────────── */
-  .sev-critical { color: var(--red); }
-  .sev-high     { color: var(--orange); }
-  .sev-medium   { color: #ffe066; }
-  .sev-low      { color: var(--text2); }
-
-  /* ─── Toast ──────────────────────────────────────────────── */
-  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-  .toast {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 18px; border-radius: 12px; min-width: 280px; max-width: 380px;
-    background: var(--bg2); border: 1px solid var(--border);
-    backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    animation: slideIn 0.3s ease; font-size: 13px; color: var(--text);
-  }
-  .toast.success { border-color: rgba(0,255,136,0.4); }
-  .toast.error   { border-color: rgba(255,68,68,0.4); }
-  @keyframes slideIn { from { transform: translateX(100px); opacity:0; } to { transform:translateX(0); opacity:1; } }
-  @keyframes slideOut { to { transform: translateX(110px); opacity:0; } }
-
-  /* ─── Loading spinner ────────────────────────────────────── */
-  .spinner { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-
-  /* ─── Empty State ────────────────────────────────────────── */
-  .empty { text-align:center; padding:40px 20px; color:var(--text3); }
-  .empty .e-icon { font-size:40px; margin-bottom:12px; }
-  .empty p { font-size:13px; }
-
-  /* ─── Mobile hamburger ───────────────────────────────────── */
-  .hamburger {
-    display: none; position: fixed; top: 16px; left: 16px; z-index: 1000;
-    background: var(--glass2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 8px 10px; cursor: pointer;
-    backdrop-filter: blur(16px); font-size: 18px;
-  }
-  .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:999; backdrop-filter:blur(4px); }
-
-  /* ─── Responsive ─────────────────────────────────────────── */
-  @media (max-width: 768px) {
-    .sidebar { position: fixed; left:0; top:0; z-index:1000; transform:translateX(-100%); }
-    .sidebar.open { transform:translateX(0); }
-    .sidebar-overlay.open { display:block; }
-    .hamburger { display:flex; }
-    .main { padding: 70px 16px 24px; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .form-row { flex-direction: column; }
-    .stat-val { font-size: 26px; }
-  }
-  @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .topbar { flex-direction: column; align-items: flex-start; }
-  }
-</style>
+    /* Responsive Mobile Design */
+    @media (max-width: 600px) {
+      body { padding: 15px 10px; }
+      .container { padding: 20px; border-radius: 8px; }
+      h1 { font-size: 1.7rem; }
+      h2 { font-size: 1.2rem; }
+      .nav-tabs { flex-direction: column; gap: 8px; }
+      .tab-btn { width: 100%; justify-content: center; }
+      p, li { font-size: 14px; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Liquid Background -->
-<div class="liquid-bg">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
-  <div class="orb orb4"></div>
+<div class="container">
+  <!-- Navigasi Tab Semulus Dashboard VEX -->
+  <div class="nav-tabs">
+    <a href="#terms" class="tab-btn" id="btn-terms">📄 Terms of Service</a>
+    <a href="#privacy" class="tab-btn" id="btn-privacy">🔒 Privacy Policy</a>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────── -->
+  <!-- TERMS OF SERVICE SECTION (PROFESSIONAL LEGAL) -->
+  <!-- ────────────────────────────────────────────────────────────── -->
+  <div id="terms-section" class="policy-content">
+    <h1>Terms of Service</h1>
+    <div class="meta-date">LAST MODIFIED: JUNE 08, 2026</div>
+    
+    <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("Licensee", "User", or "Developer") and the VEX Anti-Cheat Framework Development Team ("VEX", "we", "us", or "our"). By implementing our software modules inside any Roblox place, or authorizing the VEX Application within a Discord Server, you express your full legal compliance with these terms.</p>
+
+    <h2 class="tos-accent">1. Legal Acknowledgment & Platform Compliance</h2>
+    <p>VEX operates as a middleware cyber-security tool designed to safeguard in-game virtual ecosystems. You explicitly recognize and warrant that:</p>
+    <ul>
+      <li><strong>Roblox Terms of Service Compliance:</strong> The VEX software system complies with the Roblox Terms of Use. VEX does not hook into core engine binaries, nor does it perform operations that breach Roblox policies regarding client-side data access.</li>
+      <li><strong>Discord Developer Policy Compliance:</strong> Our automation interface strictly respects the Discord Developer Terms of Service and Developer Policy. Data scraping or unconsented tracking of Discord End-Users is strictly prohibited.</li>
+    </ul>
+
+    <h2 class="tos-accent">2. License Grant & Restrictions</h2>
+    <p>Subject to validation of a valid License Signature (<span class="mono">secret_key</span>), VEX grants you a revocable, non-exclusive, non-transferable right to deploy the anti-cheat module. You explicitly agree <strong>NOT</strong> to:</p>
+    <ol>
+      <li>Reverse engineer, deobfuscate, modify, or inject malicious hooks into the VEX Luau runtime loader scripts.</li>
+      <li>Circumvent or intercept API requests routed through the <span class="mono">/api-proxy/</span> data endpoint or forge webhook telemetry headers.</li>
+      <li>Host or re-sell the VEX ecosystem architecture without explicit cryptographically signed authorization from us.</li>
+    </ol>
+
+    <h2 class="tos-accent">3. The Global Ban Network & Database Moderation</h2>
+    <p>VEX runs a unified synchronization database across multiple license holders to mitigate active exploiters. By utilizing the Global Ban features, you understand that:</p>
+    <ul>
+      <li>All database additions via <span class="mono">/api/globalban/add-admin</span> must be backed by valid telemetry proof.</li>
+      <li>Abuse of the system to target player profiles maliciously without empirical exploit flags will lead to immediate, irreversible termination of your service license.</li>
+    </ul>
+
+    <h2 class="tos-accent">4. Limitation of Liability & Indemnification</h2>
+    <blockquote>
+      <p><strong>LEGAL DISCLAIMER:</strong> IN NO EVENT SHALL VEX ANTI-CHEAT OR ITS CONTRIBUTORS BE LIABLE FOR ANY CONSEQUENTIAL, DIRECT, INDIRECT, OR INCIDENTAL DAMAGES, INCLUDING BUT NOT LIMITED TO ROBLOX PLACE DE-RANKINGS, LOSS OF IN-GAME REVENUE, DATA CORRUPTION, OR SERVICE DISRUPTIONS ARISING OUT OF THE USE OR INABILITY TO ACCESS THE MANAGEMENT DASHBOARD.</p>
+    </blockquote>
+    <p>VEX provides automated prevention models against internal game exploits. We guarantee no absolute defense against novel or hardware-level injection methods, and services are offered on an "as-is" structural basis.</p>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────── -->
+  <!-- PRIVACY POLICY SECTION (PROFESSIONAL LEGAL) -->
+  <!-- ────────────────────────────────────────────────────────────── -->
+  <div id="privacy-section" class="policy-content">
+    <h1>Privacy Policy</h1>
+    <div class="meta-date">LAST MODIFIED: JUNE 08, 2026</div>
+    
+    <p>We respect the confidentiality of our developers and the telemetry profiles of players within protected experiences. This Privacy Policy details the exact perimeter of data ingestion performed by VEX Anti-Cheat in full conformance with international privacy regulations and platform mandates.</p>
+
+    <h2 class="privacy-accent">1. Data Minimization Principles (What We Ingest)</h2>
+    <p>In accordance with Discord’s Data Minimization policies, VEX restricts all backend tracking to strictly necessary network security telemetry:</p>
+    <ul>
+      <li><strong>Developer & Administration Records:</strong> We register your <span class="mono">discord_id</span> and <span class="mono">discord_tag</span> to uniquely index database authorization parameters for your web dashboard session.</li>
+      <li><strong>Roblox Telemetry Metrics:</strong> When a memory breach or tool exploit occurs, our runtime script pushes the target player's Roblox Username, <span class="mono">roblox_uid</span>, current <span class="mono">place_id</span>, and the localized nature of the hack (e.g. Speed Hack, Flight, Exploit Executor flag) to our system database.</li>
+    </ul>
+
+    <h2 class="privacy-accent">2. Data Isolation & Security Protocols</h2>
+    <p>We take security very seriously. All requests handled through our interface use secure proxy routing:</p>
+    <ul>
+      <li><strong>No PII Storage:</strong> We do not capture, record, or request Personally Identifiable Information (PII) such as IP addresses, real-world locations, emails, or payment logs.</li>
+      <li><strong>Encryption Standards:</strong> Data flowing through our API pathways utilizes cryptographic handshakes to prevent packet-sniffing or database tampering.</li>
+    </ul>
+
+    <h2 class="privacy-accent">3. Retention, Portability, and Right to Erasure</h2>
+    <p>VEX fully respects the "Right to Be Forgotten" mandated by regional privacy protocols and standard developer rules:</p>
+    <p>Violation logs are routinely pruned to conserve backend database storage space. If you are a game developer or player whose telemetry is logged in our systems and wish to request complete data erasure, you may invoke a removal request by filing an operational ticket inside our automated support matrix or contacting the system administrator.</p>
+
+    <h2 class="privacy-accent">4. Disclosures Regarding Third-Party Services</h2>
+    <p>Because the VEX backend interfaces directly with Discord API Gateways and Roblox Data Stores, the collection habits of those underlying parent systems are bound by their respective corporate terms. We urge users to consult the Roblox Corporation Privacy Policy and Discord Inc. Data Usage Regulations for comprehensive platform-wide auditing.</p>
+  </div>
+
+  <!-- Footer Menyelaraskan Hak Cipta -->
+  <div class="footer">
+    © 2026 VEX Anti-Cheat Ecosystem. All rights reserved.<br>
+    Protected by automated license compliance frameworks. VEX is independent and unaffiliated with Discord Inc. or Roblox Corporation.
+  </div>
 </div>
 
-<!-- Hamburger (Mobile) -->
-<button class="hamburger" onclick="toggleSidebar()">☰</button>
-<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<div class="root">
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="logo">
-      <div class="logo-icon">🛡️</div>
-      <div class="logo-text"><b>VEX</b><span>Virtual Execution X-termination</span></div>
-    </div>
-
-    <div class="nav-section">Navigation</div>
-    <a class="nav-item active" onclick="showPage('dashboard')" href="#">
-      <span class="icon">📊</span> Dashboard
-    </a>
-    <a class="nav-item" onclick="showPage('licenses')" href="#">
-      <span class="icon">🔑</span> Licenses
-    </a>
-    <a class="nav-item" onclick="showPage('violations')" href="#">
-      <span class="icon">🚨</span> Violations
-    </a>
-    <a class="nav-item" onclick="showPage('copyalerts')" href="#">
-      <span class="icon">📋</span> Copy Alerts
-    </a>
-    <a class="nav-item" onclick="showPage('globalban')" href="#">
-      <span class="icon">🌐</span> Global Bans
-    </a>
-    <a class="nav-item" onclick="showPage('developers')" href="#">
-      <span class="icon">👨‍💻</span> Developers
-    </a>
-
-    <div class="nav-section" style="margin-top:16px">Actions</div>
-    <a class="nav-item" onclick="showPage('register')" href="#">
-      <span class="icon">➕</span> Register PlaceId
-    </a>
-    <a class="nav-item" onclick="showPage('revoke')" href="#">
-      <span class="icon">🗑️</span> Revoke License
-    </a>
-
-    <div class="sidebar-footer">
-      VEX Anti-Cheat v1.0<br>
-      <span id="sidebarStatus" style="color:var(--text3)">Connecting...</span>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <main class="main">
-
-    <!-- ── DASHBOARD PAGE ── -->
-    <div class="page active" id="page-dashboard">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>📊</span> Dashboard</div>
-          <div class="page-sub">Monitor sistem VEX Anti-Cheat secara realtime</div>
-        </div>
-        <div class="status-badge"><div class="status-dot"></div> SYSTEM ONLINE</div>
-      </div>
-
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card"><span class="stat-icon">👨‍💻</span><div class="stat-val" id="s-devs">—</div><div class="stat-label">Total Developers</div></div>
-        <div class="stat-card"><span class="stat-icon">🔑</span><div class="stat-val blue" id="s-lics">—</div><div class="stat-label">Active Licenses</div></div>
-        <div class="stat-card"><span class="stat-icon">🚨</span><div class="stat-val red" id="s-viols">—</div><div class="stat-label">Total Violations</div></div>
-        <div class="stat-card"><span class="stat-icon">🚫</span><div class="stat-val orange" id="s-bans">—</div><div class="stat-label">Total Bans</div></div>
-        <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-val purple" id="s-copies">—</div><div class="stat-label">Copy Attempts</div></div>
-        <div class="stat-card"><span class="stat-icon">🌐</span><div class="stat-val red" id="s-gbans">—</div><div class="stat-label">Global Bans</div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recent Violations</div>
-          <button class="btn btn-ghost btn-sm" onclick="loadRecentViolations()">🔄 Refresh</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Time</th><th>Player</th><th>Place ID</th><th>Cheat Type</th><th>Severity</th><th>Action</th></tr></thead>
-            <tbody id="recentViolTable"><tr><td colspan="6"><div class="empty"><div class="spinner"></div></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── LICENSES PAGE ── -->
-    <div class="page" id="page-licenses">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>🔑</span> License Management</div>
-          <div class="page-sub">Kelola semua license VEX yang aktif</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="loadLicenses()">🔄 Refresh</button>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Place ID</th><th>Discord</th><th>Status</th><th>Created</th><th>Expires</th><th>Last Seen</th><th>Actions</th></tr></thead>
-            <tbody id="licenseTable"><tr><td colspan="7"><div class="empty"><div class="spinner"></div></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── VIOLATIONS PAGE ── -->
-    <div class="page" id="page-violations">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>🚨</span> Violation Logs</div>
-          <div class="page-sub">Riwayat semua deteksi cheat (auto-hapus 90 hari)</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="loadAllViolations()">🔄 Refresh</button>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Filter</div>
-        </div>
-        <div class="form-row" style="margin-bottom:0">
-          <div class="form-group"><input id="filterPlaceId" placeholder="Filter by PlaceId..." oninput="filterViolations()"/></div>
-          <div class="form-group"><input id="filterUser" placeholder="Filter by Username..." oninput="filterViolations()"/></div>
-          <div class="form-group">
-            <select id="filterSev" onchange="filterViolations()">
-              <option value="">All Severity</option>
-              <option value="critical">Critical</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Time</th><th>Player</th><th>UID</th><th>PlaceID</th><th>Cheat</th><th>Severity</th><th>Action Taken</th></tr></thead>
-            <tbody id="violTable"><tr><td colspan="7"><div class="empty"><div class="spinner"></div></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── COPY ALERTS PAGE ── -->
-    <div class="page" id="page-copyalerts">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>📋</span> Copy Alerts</div>
-          <div class="page-sub">Deteksi upaya pencurian/copy map</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="loadCopyAlerts()">🔄 Refresh</button>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Detected At</th><th>Original PlaceID</th><th>Copied PlaceID</th><th>Notified</th></tr></thead>
-            <tbody id="copyTable"><tr><td colspan="4"><div class="empty"><div class="spinner"></div></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── DEVELOPERS PAGE ── -->
-    <div class="page" id="page-developers">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>👨‍💻</span> Developers</div>
-          <div class="page-sub">Daftar developer yang menggunakan VEX</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="loadDevelopers()">🔄 Refresh</button>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Discord ID</th><th>Username</th><th>Places</th><th>Joined</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="devTable"><tr><td colspan="7"><div class="empty"><div class="spinner"></div></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── REGISTER PLACEID PAGE ── -->
-    <div class="page" id="page-register">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>➕</span> Register PlaceId Manual</div>
-          <div class="page-sub">Daftarkan PlaceId secara manual tanpa Discord bot</div>
-        </div>
-      </div>
-      <div class="card" style="max-width:560px">
-        <div class="card-header"><div class="card-title">New License</div></div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Place ID *</label>
-            <input id="reg-placeid" type="text" placeholder="123456789"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Discord ID *</label>
-            <input id="reg-discordid" type="text" placeholder="Discord User ID (angka)"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Discord Username</label>
-            <input id="reg-discordtag" type="text" placeholder="username (opsional)"/>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:8px">
-          <button class="btn btn-primary" onclick="registerLicense()">🔑 Create License</button>
-          <button class="btn btn-ghost" onclick="clearRegForm()">✕ Clear</button>
-        </div>
-
-        <!-- Result box -->
-        <div id="reg-result" style="display:none; margin-top:20px; padding:16px; background:rgba(0,255,136,0.06); border:1px solid var(--border); border-radius:12px;">
-          <div style="font-size:12px; color:var(--text2); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">🔑 Secret Key (simpan, hanya tampil sekali!)</div>
-          <div id="reg-key" style="font-family:monospace; font-size:13px; color:var(--accent); word-break:break-all; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px;"></div>
-          <div style="display:flex;gap:8px;margin-top:12px;">
-            <button class="btn btn-ghost btn-sm" onclick="copyKey()">📋 Copy Key</button>
-          </div>
-          <div id="reg-exp" style="font-size:11px; color:var(--text2); margin-top:8px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── REVOKE LICENSE PAGE ── -->
-    <div class="page" id="page-revoke">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>🗑️</span> Revoke License</div>
-          <div class="page-sub">Nonaktifkan license untuk PlaceId tertentu</div>
-        </div>
-      </div>
-      <div class="card" style="max-width:480px">
-        <div class="card-header"><div class="card-title">Revoke</div></div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Place ID *</label>
-            <input id="rev-placeid" type="text" placeholder="PlaceId yang ingin direvoke"/>
-          </div>
-        </div>
-        <div style="padding:12px; background:rgba(255,68,68,0.08); border:1px solid rgba(255,68,68,0.2); border-radius:10px; margin-bottom:14px; font-size:12px; color:var(--red);">
-          ⚠️ <b>Peringatan:</b> Revoke akan langsung menonaktifkan license. Game yang menggunakan PlaceId ini akan mendapat pesan invalid license saat server restart.
-        </div>
-        <button class="btn btn-danger" onclick="revokeLicense()">🗑️ Revoke License</button>
-      </div>
-    </div>
-
-
-    <!-- ── GLOBAL BAN PAGE ── -->
-    <div class="page" id="page-globalban">
-      <div class="topbar">
-        <div>
-          <div class="page-title"><span>🌐</span> Global Ban Network</div>
-          <div class="page-sub">Blacklist lintas semua map VEX — ban sekali berlaku di semua map</div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-ghost btn-sm" onclick="loadGlobalBans()">🔄 Refresh</button>
-          <button class="btn btn-danger btn-sm" onclick="showGlobalBanForm()">➕ Add Global Ban</button>
-        </div>
-      </div>
-
-      <!-- Info card -->
-      <div class="card" style="border-color:rgba(255,68,68,0.3);background:rgba(255,68,68,0.04);margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <div style="font-size:28px">🌐</div>
-          <div>
-            <div style="font-weight:700;color:var(--red);margin-bottom:4px">Cara Kerja Global Ban Network</div>
-            <div style="font-size:12px;color:var(--text2);line-height:1.6">
-              Mirip seperti VAC ban di Steam — ketika player terdeteksi cheat <b>EXPLOIT_EXEC</b> atau <b>TELEPORT</b> di <i>salah satu</i> map,
-              mereka otomatis masuk blacklist global ini. Semua map lain yang pakai VEX akan <b>menolak player ini saat join</b>.
-              Developer tidak perlu setting apa-apa — berjalan otomatis.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Manual ban form (hidden by default) -->
-      <div class="card" id="globalBanForm" style="display:none;max-width:520px;margin-bottom:20px">
-        <div class="card-header"><div class="card-title">Add Manual Global Ban</div></div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Roblox User ID *</label>
-            <input id="gb-uid" type="text" placeholder="12345678"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Username</label>
-            <input id="gb-name" type="text" placeholder="Roblox username (opsional)"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Reason *</label>
-            <input id="gb-reason" type="text" placeholder="Alasan global ban..."/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Severity</label>
-            <select id="gb-severity">
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-danger" onclick="addGlobalBan()">🌐 Add Global Ban</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('globalBanForm').style.display='none'">Cancel</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Daftar Global Banned Players</div>
-          <div style="font-size:12px;color:var(--text2)" id="gb-count">Loading...</div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Player</th><th>Roblox UID</th><th>Cheat Types</th><th>Source Map</th><th>Banned At</th><th>Severity</th><th>Actions</th></tr></thead>
-            <tbody id="globalBanTable"><tr><td colspan="7"><div class="empty"><div class="spinner" style="margin:0 auto"></div></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </main><!-- /main -->
-</div><!-- /root -->
-
 <script>
-// ──────────────────────────────────────────────────────────────
-// CONFIG — isi sebelum deploy
-// ──────────────────────────────────────────────────────────────
-const CONFIG = {
-  BACKEND_URL: 'https://vex-backend.vercel.app',  // ← ganti ini
-  ADMIN_API_KEY: '', // ← ganti ini
-};
-
-// ──────────────────────────────────────────────────────────────
-// API Helper
-// ──────────────────────────────────────────────────────────────
-async function api(path, method = 'GET', body = null) {
-  const opts = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      // Kita tidak perlu menulis x-admin-key di sini lagi, 
-      // karena vercel.json yang akan menyuntikkannya secara aman di server!
+  // Advanced Router Logic based on URL Hash
+  function applySystemRouting() {
+    const activeHash = window.location.hash;
+    
+    // Reset body route tokens
+    document.body.classList.remove('route-terms', 'route-privacy');
+    
+    if (activeHash === '#privacy') {
+      document.body.classList.add('route-privacy');
+      document.title = "Privacy Policy — VEX Anti-Cheat";
+    } else {
+      // Defaults to terms if empty or explicitly hashed #terms
+      document.body.classList.add('route-terms');
+      document.title = "Terms of Service — VEX Anti-Cheat";
     }
-  };
-  if (body) opts.body = JSON.stringify(body);
-  try {
-    // Memanggil ke /api-proxy/path
-    const res  = await fetch('/api-proxy' + path, opts);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Request failed');
-    return data;
-  } catch (e) {
-    throw e;
   }
-}
 
-// ──────────────────────────────────────────────────────────────
-// Toast
-// ──────────────────────────────────────────────────────────────
-function toast(msg, type = 'success') {
-  const container = document.getElementById('toastContainer');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span><span>${msg}</span>`;
-  container.appendChild(el);
-  setTimeout(() => {
-    el.style.animation = 'slideOut 0.3s ease forwards';
-    setTimeout(() => el.remove(), 300);
-  }, 3500);
-}
-
-// ──────────────────────────────────────────────────────────────
-// Page Navigation
-// ──────────────────────────────────────────────────────────────
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(name)) n.classList.add('active');
-  });
-  // Close mobile sidebar
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-  // Load data for the page
-  const loaders = {
-    dashboard: () => { loadStats(); loadRecentViolations(); },
-    licenses: loadLicenses,
-    violations: loadAllViolations,
-    copyalerts: loadCopyAlerts,
-    developers: loadDevelopers,
-  };
-  if (loaders[name]) loaders[name]();
-}
-
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
-}
-
-// ──────────────────────────────────────────────────────────────
-// Helpers
-// ──────────────────────────────────────────────────────────────
-const fmtDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-const daysLeft = (d) => {
-  if (!d) return null;
-  const diff = new Date(d) - new Date();
-  return Math.ceil(diff / 86400000);
-};
-const sevClass = { critical:'sev-critical', high:'sev-high', medium:'sev-medium', low:'sev-low' };
-const cheatEmoji = {
-  SPEED_HACK:'💨', FLY_HACK:'🦅', TELEPORT:'⚡', AIMBOT:'🎯',
-  AUTO_FARM:'🤖', ESP:'👁️', INF_JUMP:'🦘', EXPLOIT_EXEC:'💀', MAP_COPY:'📋', NOCLIP:'👻'
-};
-
-function rowLoading(id, cols) {
-  document.getElementById(id).innerHTML = `<tr><td colspan="${cols}"><div class="empty"><div class="spinner" style="margin:0 auto"></div></div></td></tr>`;
-}
-function rowEmpty(id, cols, msg) {
-  document.getElementById(id).innerHTML = `<tr><td colspan="${cols}"><div class="empty"><div class="e-icon">🔍</div><p>${msg}</p></div></td></tr>`;
-}
-
-// ──────────────────────────────────────────────────────────────
-// Dashboard Stats
-// ──────────────────────────────────────────────────────────────
-async function loadStats() {
-  try {
-    const s = await api('/api/admin/stats');
-    document.getElementById('s-devs').textContent   = s.total_developers  ?? 0;
-    document.getElementById('s-lics').textContent   = s.active_licenses   ?? 0;
-    document.getElementById('s-viols').textContent  = s.total_violations  ?? 0;
-    document.getElementById('s-bans').textContent   = s.total_bans        ?? 0;
-    document.getElementById('s-copies').textContent = s.copy_attempts     ?? 0;
-    document.getElementById('sidebarStatus').textContent = '● Online';
-    document.getElementById('sidebarStatus').style.color = 'var(--accent)';
-  } catch(e) {
-    document.getElementById('sidebarStatus').textContent = '● Offline';
-    document.getElementById('sidebarStatus').style.color = 'var(--red)';
-  }
-}
-
-// ──────────────────────────────────────────────────────────────
-// Recent Violations (Dashboard)
-// ──────────────────────────────────────────────────────────────
-async function loadRecentViolations() {
-  rowLoading('recentViolTable', 6);
-  try {
-    const rows = await api('/api/admin/violations-recent');
-    if (!rows.length) { rowEmpty('recentViolTable', 6, 'Belum ada violation terdeteksi 🎉'); return; }
-    document.getElementById('recentViolTable').innerHTML = rows.slice(0,20).map(v => `
-      <tr>
-        <td style="white-space:nowrap;color:var(--text2);font-size:11px">${fmtDate(v.timestamp)}</td>
-        <td><b>${v.username||'Unknown'}</b></td>
-        <td class="mono">${v.place_id}</td>
-        <td>${cheatEmoji[v.cheat_type]||'⚠️'} ${v.cheat_type}</td>
-        <td class="${sevClass[v.severity]||''}">${(v.severity||'').toUpperCase()}</td>
-        <td><span class="badge ${v.action_taken==='ban'?'badge-red':v.action_taken==='kick'?'badge-orange':v.action_taken==='warn'?'badge-purple':'badge-blue'}">${v.action_taken||'none'}</span></td>
-      </tr>`).join('');
-  } catch(e) { rowEmpty('recentViolTable', 6, 'Gagal memuat data: ' + e.message); }
-}
-
-// ──────────────────────────────────────────────────────────────
-// Licenses
-// ──────────────────────────────────────────────────────────────
-async function loadLicenses() {
-  rowLoading('licenseTable', 7);
-  try {
-    const rows = await api('/api/license/all');
-    if (!rows.length) { rowEmpty('licenseTable', 7, 'Belum ada license terdaftar'); return; }
-    document.getElementById('licenseTable').innerHTML = rows.map(l => {
-      const dl = daysLeft(l.expires_at);
-      const expired = dl !== null && dl <= 0;
-      return `<tr>
-        <td class="mono">${l.place_id}</td>
-        <td style="color:var(--text2)">${l.discord_id}</td>
-        <td><span class="badge ${!l.is_active?'badge-red':expired?'badge-orange':'badge-green'}">${!l.is_active?'Revoked':expired?'Expired':'Active'}</span></td>
-        <td style="font-size:11px;color:var(--text2)">${fmtDate(l.created_at)}</td>
-        <td style="font-size:11px;color:${dl!==null&&dl<=14?'var(--orange)':'var(--text2)'}">${fmtDate(l.expires_at)}${dl!==null?' ('+dl+'d)':''}</td>
-        <td style="font-size:11px;color:var(--text2)">${l.last_seen?fmtDate(l.last_seen):'Never'}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="quickRevoke('${l.place_id}')">Revoke</button></td>
-      </tr>`;
-    }).join('');
-  } catch(e) { rowEmpty('licenseTable', 7, 'Gagal memuat: ' + e.message); }
-}
-
-async function quickRevoke(placeId) {
-  if (!confirm(`Revoke license untuk PlaceId ${placeId}?`)) return;
-  try {
-    await api('/api/license/revoke', 'POST', { place_id: placeId });
-    toast('License direvoke: ' + placeId);
-    loadLicenses();
-  } catch(e) { toast('Gagal revoke: ' + e.message, 'error'); }
-}
-
-// ──────────────────────────────────────────────────────────────
-// All Violations
-// ──────────────────────────────────────────────────────────────
-let _allViolations = [];
-async function loadAllViolations() {
-  rowLoading('violTable', 7);
-  try {
-    _allViolations = await api('/api/violations/all/list');
-    renderViolations(_allViolations);
-  } catch(e) { rowEmpty('violTable', 7, 'Gagal memuat: ' + e.message); }
-}
-
-function renderViolations(rows) {
-  if (!rows.length) { rowEmpty('violTable', 7, 'Tidak ada violation'); return; }
-  document.getElementById('violTable').innerHTML = rows.map(v => `
-    <tr>
-      <td style="white-space:nowrap;color:var(--text2);font-size:11px">${fmtDate(v.timestamp)}</td>
-      <td><b>${v.username||'Unknown'}</b></td>
-      <td class="mono" style="font-size:11px">${v.roblox_uid}</td>
-      <td class="mono">${v.place_id}</td>
-      <td>${cheatEmoji[v.cheat_type]||'⚠️'} <b>${v.cheat_type}</b></td>
-      <td class="${sevClass[v.severity]||''}">${(v.severity||'').toUpperCase()}</td>
-      <td><span class="badge ${v.action_taken==='ban'?'badge-red':v.action_taken==='kick'?'badge-orange':v.action_taken==='warn'?'badge-purple':'badge-blue'}">${v.action_taken||'none'}</span></td>
-    </tr>`).join('');
-}
-
-function filterViolations() {
-  const pid = document.getElementById('filterPlaceId').value.toLowerCase();
-  const usr = document.getElementById('filterUser').value.toLowerCase();
-  const sev = document.getElementById('filterSev').value;
-  const filtered = _allViolations.filter(v =>
-    (!pid || v.place_id.toLowerCase().includes(pid)) &&
-    (!usr || (v.username||'').toLowerCase().includes(usr)) &&
-    (!sev || v.severity === sev)
-  );
-  renderViolations(filtered);
-}
-
-// ──────────────────────────────────────────────────────────────
-// Copy Alerts
-// ──────────────────────────────────────────────────────────────
-async function loadCopyAlerts() {
-  rowLoading('copyTable', 4);
-  try {
-    const rows = await api('/api/admin/copy-alerts');
-    if (!rows.length) { rowEmpty('copyTable', 4, 'Tidak ada copy alert 🎉'); return; }
-    document.getElementById('copyTable').innerHTML = rows.map(c => `
-      <tr>
-        <td style="font-size:11px;color:var(--text2)">${fmtDate(c.detected_at)}</td>
-        <td class="mono">${c.original_place_id}</td>
-        <td class="mono">${c.copied_place_id || '—'}</td>
-        <td><span class="badge ${c.notified?'badge-green':'badge-orange'}">${c.notified?'Notified':'Pending'}</span></td>
-      </tr>`).join('');
-  } catch(e) { rowEmpty('copyTable', 4, 'Gagal memuat: ' + e.message); }
-}
-
-// ──────────────────────────────────────────────────────────────
-// Developers
-// ──────────────────────────────────────────────────────────────
-async function loadDevelopers() {
-  rowLoading('devTable', 7);
-  try {
-    const rows = await api('/api/admin/developers');
-    if (!rows.length) { rowEmpty('devTable', 7, 'Belum ada developer terdaftar'); return; }
-    document.getElementById('devTable').innerHTML = rows.map(d => {
-      const dl = daysLeft(d.expires_at);
-      return `<tr>
-        <td class="mono" style="font-size:11px">${d.discord_id}</td>
-        <td>${d.discord_tag||'—'}</td>
-        <td><b>${d.place_count||0}</b>/5</td>
-        <td style="font-size:11px;color:var(--text2)">${fmtDate(d.created_at)}</td>
-        <td style="font-size:11px;color:${dl!==null&&dl<=14?'var(--orange)':'var(--text2)'}">${fmtDate(d.expires_at)}</td>
-        <td><span class="badge ${d.is_active?'badge-green':'badge-red'}">${d.is_active?'Active':'Inactive'}</span></td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteDev('${d.discord_id}')">Remove</button></td>
-      </tr>`;
-    }).join('');
-  } catch(e) { rowEmpty('devTable', 7, 'Gagal memuat: ' + e.message); }
-}
-
-async function deleteDev(discordId) {
-  if (!confirm(`Hapus developer ${discordId} dan semua license-nya?`)) return;
-  try {
-    await api(`/api/admin/developer/${discordId}`, 'DELETE');
-    toast('Developer dihapus');
-    loadDevelopers();
-  } catch(e) { toast('Gagal: ' + e.message, 'error'); }
-}
-
-// ──────────────────────────────────────────────────────────────
-// Register License
-// ──────────────────────────────────────────────────────────────
-async function registerLicense() {
-  const placeId   = document.getElementById('reg-placeid').value.trim();
-  const discordId = document.getElementById('reg-discordid').value.trim();
-  const discordTag= document.getElementById('reg-discordtag').value.trim();
-
-  if (!placeId || !discordId) { toast('PlaceId dan Discord ID wajib diisi!', 'error'); return; }
-  if (!/^\d+$/.test(placeId))  { toast('PlaceId harus berupa angka!', 'error'); return; }
-
-  try {
-    const data = await api('/api/license/register-manual', 'POST', { place_id: placeId, discord_id: discordId, discord_tag: discordTag || undefined });
-    document.getElementById('reg-result').style.display = 'block';
-    document.getElementById('reg-key').textContent = data.secret_key;
-    document.getElementById('reg-exp').textContent = 'Expires: ' + fmtDate(data.expires_at);
-    toast('License berhasil dibuat!');
-  } catch(e) { toast('Gagal: ' + e.message, 'error'); }
-}
-
-function clearRegForm() {
-  ['reg-placeid','reg-discordid','reg-discordtag'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('reg-result').style.display = 'none';
-}
-
-function copyKey() {
-  const key = document.getElementById('reg-key').textContent;
-  navigator.clipboard.writeText(key).then(() => toast('Key disalin ke clipboard!')).catch(() => toast('Gagal copy', 'error'));
-}
-
-// ──────────────────────────────────────────────────────────────
-// Revoke License
-// ──────────────────────────────────────────────────────────────
-async function revokeLicense() {
-  const placeId = document.getElementById('rev-placeid').value.trim();
-  if (!placeId) { toast('PlaceId wajib diisi!', 'error'); return; }
-  if (!confirm(`Yakin ingin merevoke license untuk PlaceId ${placeId}?`)) return;
-  try {
-    await api('/api/license/revoke', 'POST', { place_id: placeId });
-    toast('License berhasil direvoke!');
-    document.getElementById('rev-placeid').value = '';
-  } catch(e) { toast('Gagal: ' + e.message, 'error'); }
-}
-
-
-// ──────────────────────────────────────────────────────────────
-// Global Ban Network
-// ──────────────────────────────────────────────────────────────
-async function loadGlobalBans() {
-  rowLoading("globalBanTable", 7);
-  try {
-    const rows = await api("/api/globalban/list");
-    document.getElementById("gb-count").textContent = rows.length + " global banned players";
-    document.getElementById("s-gbans").textContent  = rows.length;
-    if (!rows.length) { rowEmpty("globalBanTable", 7, "Tidak ada global ban 🎉"); return; }
-    document.getElementById("globalBanTable").innerHTML = rows.map(b => `
-      <tr>
-        <td><b>${b.username || "Unknown"}</b></td>
-        <td class="mono" style="font-size:11px">${b.roblox_uid}</td>
-        <td>${(b.cheat_types||[]).map(t => `<span class="badge badge-red" style="margin:1px">${t}</span>`).join("")||"—"}</td>
-        <td class="mono" style="font-size:11px">${b.source_place_id||"Manual"}</td>
-        <td style="font-size:11px;color:var(--text2);white-space:nowrap">${fmtDate(b.banned_at)}</td>
-        <td><span class="badge ${b.severity==="critical"?"badge-red":"badge-orange"}">${(b.severity||"high").toUpperCase()}</span></td>
-        <td><button class="btn btn-ghost btn-sm" onclick="removeGlobalBan('${b.roblox_uid}','${b.username||b.roblox_uid}')">Unban</button></td>
-      </tr>`).join("");
-  } catch(e) { rowEmpty("globalBanTable", 7, "Gagal memuat: " + e.message); }
-}
-
-function showGlobalBanForm() {
-  const f = document.getElementById("globalBanForm");
-  f.style.display = f.style.display === "none" ? "block" : "none";
-}
-
-async function addGlobalBan() {
-  const uid    = document.getElementById("gb-uid").value.trim();
-  const name   = document.getElementById("gb-name").value.trim();
-  const reason = document.getElementById("gb-reason").value.trim();
-  const sev    = document.getElementById("gb-severity").value;
-  if (!uid || !reason) { toast("UID dan Reason wajib diisi!", "error"); return; }
-  try {
-    await api("/api/globalban/add-admin", "POST", { roblox_uid: uid, username: name||undefined, reason, severity: sev });
-    toast("✅ Global ban ditambahkan!");
-    document.getElementById("globalBanForm").style.display = "none";
-    loadGlobalBans();
-  } catch(e) { toast("Gagal: " + e.message, "error"); }
-}
-
-async function removeGlobalBan(uid, name) {
-  if (!confirm("Hapus global ban untuk " + name + " (" + uid + ")?")) return;
-  try {
-    await api("/api/globalban/remove", "DELETE", { roblox_uid: uid });
-    toast("Global ban dihapus untuk " + name);
-    loadGlobalBans();
-  } catch(e) { toast("Gagal: " + e.message, "error"); }
-}
-
-// ──────────────────────────────────────────────────────────────
-// Init
-// ──────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  loadStats();
-  loadRecentViolations();
-  // Load global ban count for dashboard
-  loadGlobalBans();
-  // Auto-refresh stats every 60s
-  setInterval(loadStats, 60000);
-});
+  // Bind operational hook events
+  window.addEventListener('hashchange', applySystemRouting);
+  window.addEventListener('DOMContentLoaded', applySystemRouting);
 </script>
 </body>
 </html>
