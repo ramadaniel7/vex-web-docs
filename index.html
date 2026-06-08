@@ -648,7 +648,7 @@
 // ──────────────────────────────────────────────────────────────
 const CONFIG = {
   BACKEND_URL: 'https://vex-backend.vercel.app',  // ← ganti ini
-  ADMIN_API_KEY: 'Bonte14ribu', // ← ganti ini
+  ADMIN_API_KEY: '', // ← ganti ini
 };
 
 // ──────────────────────────────────────────────────────────────
@@ -659,12 +659,14 @@ async function api(path, method = 'GET', body = null) {
     method,
     headers: {
       'Content-Type': 'application/json',
-      'x-admin-key': CONFIG.ADMIN_API_KEY,
+      // Kita tidak perlu menulis x-admin-key di sini lagi, 
+      // karena vercel.json yang akan menyuntikkannya secara aman di server!
     }
   };
   if (body) opts.body = JSON.stringify(body);
   try {
-    const res  = await fetch(CONFIG.BACKEND_URL + path, opts);
+    // Memanggil ke /api-proxy/path
+    const res  = await fetch('/api-proxy' + path, opts);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Request failed');
     return data;
