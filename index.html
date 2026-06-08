@@ -3,283 +3,423 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legal & Compliance - VEX Security</title>
+  <title>Legal & Compliance — VEX Security</title>
   <style>
     :root {
-      --bg: #0f111a;
-      --surface: #161925;
-      --text: #f8f9fa;
-      --text2: #94a3b8;
+      --bg: #0b0c10;
+      --surface: rgba(22, 25, 37, 0.7);
+      --surface-blur: saturate(180%) blur(20px);
+      --text-main: #f8f9fa;
+      --text-muted: #8a99ad;
       --accent-tos: #00e676;
       --accent-privacy: #ff9100;
-      --border: #24293e;
-      --red: #ff4d4d;
+      --border: rgba(255, 255, 255, 0.06);
+      --liquid-shadow: rgba(0, 230, 118, 0.15);
     }
     
     * { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
-      color: var(--text);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 230, 118, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(255, 145, 0, 0.04) 0%, transparent 40%);
+      color: var(--text-main);
       line-height: 1.7;
-      padding: 40px 20px;
+      padding: 60px 20px;
+      overflow-x: hidden;
     }
     
     .container {
-      max-width: 900px;
+      max-width: 840px;
       margin: 0 auto;
       background: var(--surface);
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+      backdrop-filter: var(--surface-blur);
+      -webkit-backdrop-filter: var(--surface-blur);
+      padding: 50px;
+      border-radius: 24px;
       border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
 
-    /* Tabs Navigation */
+    /* Header Bar: Nav & Lang */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      gap: 15px;
+    }
+
+    /* iOS Liquid Tabs Navigation */
     .nav-tabs {
       display: flex;
-      gap: 12px;
-      margin-bottom: 35px;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 4px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      position: relative;
     }
 
     .tab-btn {
+      position: relative;
       background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text2);
-      font-size: 15px;
-      font-weight: 600;
+      border: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      padding: 10px 20px;
-      border-radius: 6px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 10px 24px;
+      border-radius: 99px;
+      transition: color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
+      z-index: 2;
     }
 
-    .tab-btn:hover {
-      color: var(--text);
-      background: rgba(255,255,255,0.03);
-      border-color: #3b4261;
+    /* Liquid Pill Background Effect */
+    .nav-tabs::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), background 0.4s, box-shadow 0.4s;
+      z-index: 1;
     }
 
-    /* Active States Router */
-    body.route-terms #btn-terms {
-      color: #000;
-      background: var(--accent-tos);
-      border-color: var(--accent-tos);
-      box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
+    body.route-terms .nav-tabs::before {
+      transform: translateX(0);
+      background: var(--text-main);
+      box-shadow: 0 4px 15px var(--liquid-shadow);
     }
-    body.route-privacy #btn-privacy {
-      color: #000;
-      background: var(--accent-privacy);
-      border-color: var(--accent-privacy);
-      box-shadow: 0 0 15px rgba(255, 145, 0, 0.3);
+    body.route-privacy .nav-tabs::before {
+      transform: translateX(100%);
+      background: var(--text-main);
+      box-shadow: 0 4px 15px var(--liquid-shadow);
     }
 
-    /* Content Area */
+    body.route-terms #btn-terms { color: #0b0c10; font-weight: 600; }
+    body.route-privacy #btn-privacy { color: #0b0c10; font-weight: 600; }
+
+    /* Language Switcher iOS style */
+    .lang-switcher {
+      display: flex;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 2px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    html[lang="en"] #lang-en, html[lang="id"] #lang-id {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+
+    /* Content Area Animation */
     .policy-content { display: none; }
-    body.route-terms #terms-section { display: block; animation: fadeIn 0.3s ease; }
-    body.route-privacy #privacy-section { display: block; animation: fadeIn 0.3s ease; }
+    body.route-terms #terms-section { display: block; animation: liquidShow 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+    body.route-privacy #privacy-section { display: block; animation: liquidShow 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes liquidShow {
+      from { opacity: 0; filter: blur(10px); transform: scale(0.98) translateY(5px); }
+      to { opacity: 1; filter: blur(0); transform: scale(1) translateY(0); }
     }
 
-    /* Typography Styling */
+    /* Language Show/Hide Dynamic Setup */
+    html[lang="en"] .lang-id { display: none !important; }
+    html[lang="id"] .lang-en { display: none !important; }
+
+    /* Typography */
     h1 { 
-      font-size: 2.2rem; 
-      font-weight: 800;
+      font-size: 2rem; 
+      font-weight: 700;
       letter-spacing: -0.5px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .meta-date {
-      font-size: 13px;
-      color: var(--text2);
-      margin-bottom: 30px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 35px;
       font-family: monospace;
+      letter-spacing: 0.5px;
     }
     h2 { 
-      margin-top: 35px; 
-      font-size: 1.4rem; 
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-      margin-bottom: 15px;
+      margin-top: 40px; 
+      font-size: 1.25rem; 
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      margin-bottom: 14px;
     }
     .tos-accent { color: var(--accent-tos); }
     .privacy-accent { color: var(--accent-privacy); }
     
     p { 
-      color: var(--text2); 
+      color: var(--text-muted); 
       font-size: 15px; 
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       text-align: justify;
     }
     
     ul, ol { 
-      padding-left: 25px; 
-      margin-bottom: 20px;
+      padding-left: 22px; 
+      margin-bottom: 22px;
     }
     li { 
-      color: var(--text2); 
+      color: var(--text-muted); 
       font-size: 15px; 
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     
     .mono {
       font-family: monospace;
-      background: rgba(0,0,0,0.3);
-      padding: 2px 6px;
-      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      padding: 3px 6px;
+      border-radius: 6px;
       color: #e2e8f0;
       font-size: 13px;
+      border: 1px solid rgba(255,255,255,0.03);
     }
 
     blockquote {
-      background: rgba(255, 77, 77, 0.05);
-      border-left: 4px solid var(--red);
-      padding: 15px;
-      margin: 20px 0;
-      border-radius: 0 8px 8px 0;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 3px solid var(--text-muted);
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 0 16px 16px 0;
+      border: 1px solid var(--border);
+      border-left-width: 4px;
     }
-    blockquote p { color: #fca5a5; margin-bottom: 0; font-size: 14px; }
+    blockquote p { color: #e2e8f0; margin-bottom: 0; font-size: 14px; }
     
     .footer {
-      margin-top: 50px;
+      margin-top: 60px;
       text-align: center;
       font-size: 12px;
       color: #4b5563;
       border-top: 1px solid var(--border);
-      padding-top: 25px;
+      padding-top: 30px;
     }
 
-    /* Responsive Mobile Design */
-    @media (max-width: 600px) {
-      body { padding: 15px 10px; }
-      .container { padding: 20px; border-radius: 8px; }
-      h1 { font-size: 1.7rem; }
-      h2 { font-size: 1.2rem; }
-      .nav-tabs { flex-direction: column; gap: 8px; }
-      .tab-btn { width: 100%; justify-content: center; }
+    /* Responsive Design Adjustments */
+    @media (max-width: 650px) {
+      body { padding: 30px 12px; }
+      .container { padding: 25px 20px; border-radius: 20px; }
+      .header-bar { flex-direction: column-reverse; align-items: stretch; gap: 15px; }
+      .nav-tabs { width: 100%; }
+      .tab-btn { flex: 1; text-align: center; padding: 10px 0; }
+      .lang-switcher { align-self: flex-end; }
+      h1 { font-size: 1.6rem; }
+      h2 { font-size: 1.15rem; }
       p, li { font-size: 14px; }
     }
   </style>
 </head>
-<body>
+<body class="route-terms">
 
 <div class="container">
-  <!-- Navigasi Tab Semulus Dashboard VEX -->
-  <div class="nav-tabs">
-    <a href="#terms" class="tab-btn" id="btn-terms">📄 Terms of Service</a>
-    <a href="#privacy" class="tab-btn" id="btn-privacy">🔒 Privacy Policy</a>
+  <!-- Top Navigation & Language switcher System -->
+  <div class="header-bar">
+    <div class="nav-tabs">
+      <a href="#terms" class="tab-btn" id="btn-terms">Terms of Service</a>
+      <a href="#privacy" class="tab-btn" id="btn-privacy">Privacy Policy</a>
+    </div>
+    
+    <div class="lang-switcher">
+      <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">EN</button>
+      <button class="lang-btn" id="lang-id" onclick="setLanguage('id')">ID</button>
+    </div>
   </div>
 
   <!-- ────────────────────────────────────────────────────────────── -->
-  <!-- TERMS OF SERVICE SECTION (PROFESSIONAL LEGAL) -->
+  <!-- TERMS OF SERVICE SECTION -->
   <!-- ────────────────────────────────────────────────────────────── -->
   <div id="terms-section" class="policy-content">
     <h1>Terms of Service</h1>
     <div class="meta-date">LAST MODIFIED: JUNE 08, 2026</div>
     
-    <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("Licensee", "User", or "Developer") and the VEX Anti-Cheat Framework Development Team ("VEX", "we", "us", or "our"). By implementing our software modules inside any Roblox place, or authorizing the VEX Application within a Discord Server, you express your full legal compliance with these terms.</p>
+    <!-- ENGLISH TERMS -->
+    <div class="lang-en">
+      <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("Licensee", "User", or "Developer") and the VEX Anti-Cheat Framework Development Team ("VEX", "we", "our", or "us"). By implementing our software modules inside any Roblox place, or authorizing the VEX Application within a Discord Server, you express your full legal compliance with these terms.</p>
 
-    <h2 class="tos-accent">1. Legal Acknowledgment & Platform Compliance</h2>
-    <p>VEX operates as a middleware cyber-security tool designed to safeguard in-game virtual ecosystems. You explicitly recognize and warrant that:</p>
-    <ul>
-      <li><strong>Roblox Terms of Service Compliance:</strong> The VEX software system complies with the Roblox Terms of Use. VEX does not hook into core engine binaries, nor does it perform operations that breach Roblox policies regarding client-side data access.</li>
-      <li><strong>Discord Developer Policy Compliance:</strong> Our automation interface strictly respects the Discord Developer Terms of Service and Developer Policy. Data scraping or unconsented tracking of Discord End-Users is strictly prohibited.</li>
-    </ul>
+      <h2 class="tos-accent">1. Legal Acknowledgment & Platform Compliance</h2>
+      <p>VEX operates as a middleware cyber-security tool designed to safeguard in-game virtual ecosystems. You explicitly recognize and warrant that:</p>
+      <ul>
+        <li><strong>Roblox Terms of Service Compliance:</strong> The VEX software system complies with the Roblox Terms of Use. VEX does not hook into core engine binaries, nor does it perform operations that breach Roblox policies regarding client-side data access.</li>
+        <li><strong>Discord Developer Policy Compliance:</strong> Our automation interface strictly respects the Discord Developer Terms of Service and Developer Policy. Data scraping or unconsented tracking of Discord End-Users is strictly prohibited.</li>
+      </ul>
 
-    <h2 class="tos-accent">2. License Grant & Restrictions</h2>
-    <p>Subject to validation of a valid License Signature (<span class="mono">secret_key</span>), VEX grants you a revocable, non-exclusive, non-transferable right to deploy the anti-cheat module. You explicitly agree <strong>NOT</strong> to:</p>
-    <ol>
-      <li>Reverse engineer, deobfuscate, modify, or inject malicious hooks into the VEX Luau runtime loader scripts.</li>
-      <li>Circumvent or intercept API requests routed through the <span class="mono">/api-proxy/</span> data endpoint or forge webhook telemetry headers.</li>
-      <li>Host or re-sell the VEX ecosystem architecture without explicit cryptographically signed authorization from us.</li>
-    </ol>
+      <h2 class="tos-accent">2. License Grant & Restrictions</h2>
+      <p>Subject to validation of a valid License Signature (<span class="mono">secret_key</span>), VEX grants you a revocable, non-exclusive, non-transferable right to deploy the anti-cheat module. You explicitly agree <strong>NOT</strong> to:</p>
+      <ol>
+        <li>Reverse engineer, deobfuscate, modify, or inject malicious hooks into the VEX Luau runtime loader scripts.</li>
+        <li>Circumvent or intercept API requests routed through the <span class="mono">/api-proxy/</span> data endpoint or forge webhook telemetry headers.</li>
+        <li>Host or re-sell the VEX ecosystem architecture without explicit cryptographically signed authorization from us.</li>
+      </ol>
 
-    <h2 class="tos-accent">3. The Global Ban Network & Database Moderation</h2>
-    <p>VEX runs a unified synchronization database across multiple license holders to mitigate active exploiters. By utilizing the Global Ban features, you understand that:</p>
-    <ul>
-      <li>All database additions via <span class="mono">/api/globalban/add-admin</span> must be backed by valid telemetry proof.</li>
-      <li>Abuse of the system to target player profiles maliciously without empirical exploit flags will lead to immediate, irreversible termination of your service license.</li>
-    </ul>
+      <h2 class="tos-accent">3. The Global Ban Network & Database Moderation</h2>
+      <p>VEX runs a unified synchronization database across multiple license holders to mitigate active exploiters. By utilizing the Global Ban features, you understand that:</p>
+      <ul>
+        <li>All database additions via <span class="mono">/api/globalban/add-admin</span> must be backed by valid telemetry proof.</li>
+        <li>Abuse of the system to target player profiles maliciously without empirical exploit flags will lead to immediate, irreversible termination of your service license.</li>
+      </ul>
 
-    <h2 class="tos-accent">4. Limitation of Liability & Indemnification</h2>
-    <blockquote>
-      <p><strong>LEGAL DISCLAIMER:</strong> IN NO EVENT SHALL VEX ANTI-CHEAT OR ITS CONTRIBUTORS BE LIABLE FOR ANY CONSEQUENTIAL, DIRECT, INDIRECT, OR INCIDENTAL DAMAGES, INCLUDING BUT NOT LIMITED TO ROBLOX PLACE DE-RANKINGS, LOSS OF IN-GAME REVENUE, DATA CORRUPTION, OR SERVICE DISRUPTIONS ARISING OUT OF THE USE OR INABILITY TO ACCESS THE MANAGEMENT DASHBOARD.</p>
-    </blockquote>
-    <p>VEX provides automated prevention models against internal game exploits. We guarantee no absolute defense against novel or hardware-level injection methods, and services are offered on an "as-is" structural basis.</p>
+      <h2 class="tos-accent">4. Limitation of Liability & Indemnification</h2>
+      <blockquote>
+        <p><strong>LEGAL DISCLAIMER:</strong> IN NO EVENT SHALL VEX ANTI-CHEAT OR ITS CONTRIBUTORS BE LIABLE FOR ANY CONSEQUENTIAL, DIRECT, INDIRECT, OR INCIDENTAL DAMAGES, INCLUDING BUT NOT LIMITED TO ROBLOX PLACE DE-RANKINGS, LOSS OF IN-GAME REVENUE, DATA CORRUPTION, OR SERVICE DISRUPTIONS ARISING OUT OF THE USE OR INABILITY TO ACCESS THE MANAGEMENT DASHBOARD.</p>
+      </blockquote>
+    </div>
+
+    <!-- INDONESIAN TERMS -->
+    <div class="lang-id">
+      <p>Ketentuan Layanan ("Ketentuan") ini merupakan perjanjian hukum yang mengikat antara Anda ("Pemegang Lisensi", "Pengguna", atau "Developer") dan Tim Pengembang VEX Anti-Cheat Framework ("VEX", "kami", atau "milik kami"). Dengan menerapkan modul perangkat lunak kami di dalam tempat Roblox mana pun, atau mengotorisasi Aplikasi VEX di dalam Server Discord, Anda menyatakan kepatuhan hukum penuh Anda terhadap ketentuan ini.</p>
+
+      <h2 class="tos-accent">1. Pengakuan Hukum & Kepatuhan Platform</h2>
+      <p>VEX beroperasi sebagai alat keamanan siber perantara yang dirancang untuk melindungi ekosistem virtual dalam game. Anda secara eksplisit mengakui dan menjamin bahwa:</p>
+      <ul>
+        <li><strong>Kepatuhan Ketentuan Layanan Roblox:</strong> Sistem perangkat lunak VEX mematuhi Ketentuan Penggunaan Roblox. VEX tidak mengaitkan diri ke binari inti mesin, juga tidak melakukan operasi yang melanggar kebijakan Roblox terkait akses data sisi klien.</li>
+        <li><strong>Kepatuhan Kebijakan Developer Discord:</strong> Antarmuka otomatisasi kami sangat menghormati Ketentuan Layanan dan Kebijakan Developer Discord. Pengambilan data secara ilegal atau pelacakan tanpa persetujuan dari Pengguna Akhir Discord sangat dilarang.</li>
+      </ul>
+
+      <h2 class="tos-accent">2. Pemberian Lisensi & Batasan</h2>
+      <p>Tergantung pada validasi Tanda Tangan Lisensi (<span class="mono">secret_key</span>) yang sah, VEX memberi Anda hak yang dapat ditarik kembali, non-eksklusif, dan tidak dapat dipindahtangankan untuk menyebarkan modul anti-cheat. Anda secara eksplisit setuju untuk <strong>TIDAK</strong>:</p>
+      <ol>
+        <li>Merekayasa balik, mendekripsi, memodifikasi, atau menyuntikkan skrip berbahaya ke dalam skrip pemuat runtime VEX Luau.</li>
+        <li>Mengelabui atau mencegat permintaan API yang diarahkan melalui titik akhir data <span class="mono">/api-proxy/</span> atau memalsukan header telemetri webhook.</li>
+        <li>Menyediakan hosting atau menjual kembali arsitektur ekosistem VEX tanpa izin bertanda tangan kriptografi eksplisit dari kami.</li>
+      </ol>
+
+      <h2 class="tos-accent">3. Jaringan Global Ban & Moderasi Database</h2>
+      <p>VEX menjalankan database sinkronisasi terpadu di beberapa pemegang lisensi untuk memitigasi eksploitasi aktif. Dengan menggunakan fitur Global Ban, Anda memahami bahwa:</p>
+      <ul>
+        <li>Semua penambahan database melalui <span class="mono">/api/globalban/add-admin</span> harus didukung oleh bukti telemetri yang valid.</li>
+        <li>Penyalahgunaan sistem untuk menargetkan profil pemain secara jahat tanpa bukti eksploitasi empiris akan menyebabkan penghentian lisensi layanan Anda secara langsung dan tidak dapat dibatalkan.</li>
+      </ul>
+
+      <h2 class="tos-accent">4. Batasan Tanggung Jawab & Ganti Rugi</h2>
+      <blockquote>
+        <p><strong>PENOLAKAN HUKUM:</strong> DALAM HAL APA PUN VEX ANTI-CHEAT ATAU KONTRIBUTORNYA TIDAK BERTANGGUNG JAWAB ATAS KERUGIAN KONSEKUENSIAL, LANGSUNG, TIDAK LANGSUNG, ATAU INSIDENTAL, TERMASUK NAMUN TIDAK TERBATAS PADA PENURUNAN PERINGKAT TEMPAT ROBLOX, KEHILANGAN PENDAPATAN DALAM GAME, KERUSAKAN DATA, ATAU GANGGUAN LAYANAN YANG TIMBUL DARI PENGGUNAAN ATAU KETIDAKMAMPUAN UNTUK MENGAKSES DASHBOARD MANAJEMEN.</p>
+      </blockquote>
+    </div>
   </div>
 
   <!-- ────────────────────────────────────────────────────────────── -->
-  <!-- PRIVACY POLICY SECTION (PROFESSIONAL LEGAL) -->
+  <!-- PRIVACY POLICY SECTION -->
   <!-- ────────────────────────────────────────────────────────────── -->
   <div id="privacy-section" class="policy-content">
     <h1>Privacy Policy</h1>
     <div class="meta-date">LAST MODIFIED: JUNE 08, 2026</div>
     
-    <p>We respect the confidentiality of our developers and the telemetry profiles of players within protected experiences. This Privacy Policy details the exact perimeter of data ingestion performed by VEX Anti-Cheat in full conformance with international privacy regulations and platform mandates.</p>
+    <!-- ENGLISH PRIVACY -->
+    <div class="lang-en">
+      <p>We respect the confidentiality of our developers and the telemetry profiles of players within protected experiences. This Privacy Policy details the exact perimeter of data ingestion performed by VEX Anti-Cheat in full conformance with international privacy regulations and platform mandates.</p>
 
-    <h2 class="privacy-accent">1. Data Minimization Principles (What We Ingest)</h2>
-    <p>In accordance with Discord’s Data Minimization policies, VEX restricts all backend tracking to strictly necessary network security telemetry:</p>
-    <ul>
-      <li><strong>Developer & Administration Records:</strong> We register your <span class="mono">discord_id</span> and <span class="mono">discord_tag</span> to uniquely index database authorization parameters for your web dashboard session.</li>
-      <li><strong>Roblox Telemetry Metrics:</strong> When a memory breach or tool exploit occurs, our runtime script pushes the target player's Roblox Username, <span class="mono">roblox_uid</span>, current <span class="mono">place_id</span>, and the localized nature of the hack (e.g. Speed Hack, Flight, Exploit Executor flag) to our system database.</li>
-    </ul>
+      <h2 class="privacy-accent">1. Data Minimization Principles (What We Ingest)</h2>
+      <p>In accordance with Discord’s Data Minimization policies, VEX restricts all backend tracking to strictly necessary network security telemetry:</p>
+      <ul>
+        <li><strong>Developer & Administration Records:</strong> We register your <span class="mono">discord_id</span> and <span class="mono">discord_tag</span> to uniquely index database authorization parameters for your web dashboard session.</li>
+        <li><strong>Roblox Telemetry Metrics:</strong> When a memory breach or tool exploit occurs, our runtime script pushes the target player's Roblox Username, <span class="mono">roblox_uid</span>, current <span class="mono">place_id</span>, and the localized nature of the hack (e.g. Speed Hack, Flight, Exploit Executor flag) to our system database.</li>
+      </ul>
 
-    <h2 class="privacy-accent">2. Data Isolation & Security Protocols</h2>
-    <p>We take security very seriously. All requests handled through our interface use secure proxy routing:</p>
-    <ul>
-      <li><strong>No PII Storage:</strong> We do not capture, record, or request Personally Identifiable Information (PII) such as IP addresses, real-world locations, emails, or payment logs.</li>
-      <li><strong>Encryption Standards:</strong> Data flowing through our API pathways utilizes cryptographic handshakes to prevent packet-sniffing or database tampering.</li>
-    </ul>
+      <h2 class="privacy-accent">2. Data Isolation & Security Protocols</h2>
+      <p>We take security very seriously. All requests handled through our interface use secure proxy routing:</p>
+      <ul>
+        <li><strong>No PII Storage:</strong> We do not capture, record, or request Personally Identifiable Information (PII) such as IP addresses, real-world locations, emails, or payment logs.</li>
+        <li><strong>Encryption Standards:</strong> Data flowing through our API pathways utilizes cryptographic handshakes to prevent packet-sniffing or database tampering.</li>
+      </ul>
 
-    <h2 class="privacy-accent">3. Retention, Portability, and Right to Erasure</h2>
-    <p>VEX fully respects the "Right to Be Forgotten" mandated by regional privacy protocols and standard developer rules:</p>
-    <p>Violation logs are routinely pruned to conserve backend database storage space. If you are a game developer or player whose telemetry is logged in our systems and wish to request complete data erasure, you may invoke a removal request by filing an operational ticket inside our automated support matrix or contacting the system administrator.</p>
+      <h2 class="privacy-accent">3. Retention, Portability, and Right to Erasure</h2>
+      <p>VEX fully respects the "Right to Be Forgotten" mandated by regional privacy protocols and standard developer rules:</p>
+      <p>Violation logs are routinely pruned to conserve backend database storage space. If you are a game developer or player whose telemetry is logged in our systems and wish to request complete data erasure, you may invoke a removal request by filing an operational ticket inside our automated support matrix.</p>
+    </div>
 
-    <h2 class="privacy-accent">4. Disclosures Regarding Third-Party Services</h2>
-    <p>Because the VEX backend interfaces directly with Discord API Gateways and Roblox Data Stores, the collection habits of those underlying parent systems are bound by their respective corporate terms. We urge users to consult the Roblox Corporation Privacy Policy and Discord Inc. Data Usage Regulations for comprehensive platform-wide auditing.</p>
+    <!-- INDONESIAN PRIVACY -->
+    <div class="lang-id">
+      <p>Kami menghormati kerahasiaan pengembang kami dan profil telemetri pemain dalam pengalaman yang dilindungi. Kebijakan Privasi ini menjelaskan secara rinci cakupan pengambilan data yang dilakukan oleh VEX Anti-Cheat dalam kepatuhan penuh terhadap peraturan privasi internasional dan mandat platform.</p>
+
+      <h2 class="privacy-accent">1. Prinsip Minimisasi Data (Apa yang Kami Ambil)</h2>
+      <p>Sesuai dengan kebijakan Minimisasi Data Discord, VEX membatasi semua pelacakan backend hanya pada telemetri keamanan jaringan yang benar-benar diperlukan:</p>
+      <ul>
+        <li><strong>Catatan Pengembang & Administrasi:</strong> Kami mendaftarkan <span class="mono">discord_id</span> dan <span class="mono">discord_tag</span> Anda untuk mengindeks parameter otorisasi database secara unik untuk sesi dashboard web Anda.</li>
+        <li><strong>Metrik Telemetri Roblox:</strong> Ketika pelanggaran memori atau eksploitasi alat terjadi, skrip runtime kami mengirimkan Nama Pengguna Roblox pemain target, <span class="mono">roblox_uid</span>, <span class="mono">place_id</span> saat ini, dan jenis peretasan yang terlokalisasi (misalnya Speed Hack, Flight, bendera Pelaksana Eksploitasi) ke database sistem kami.</li>
+      </ul>
+
+      <h2 class="privacy-accent">2. Isolasi Data & Protokol Keamanan</h2>
+      <p>Kami menjaga keamanan dengan sangat serius. Semua permintaan yang ditangani melalui antarmuka kami menggunakan rute proksi yang aman:</p>
+      <ul>
+        <li><strong>Tidak Ada Penyimpanan PII:</strong> Kami tidak menangkap, merekam, atau meminta Informasi Pengenal Pribadi (PII) seperti alamat IP, lokasi dunia nyata, email, atau log pembayaran.</li>
+        <li><strong>Standar Enkripsi:</strong> Data yang mengalir melalui jalur API kami menggunakan jabat tangan kriptografi untuk mencegah pelacakan paket atau gangguan database.</li>
+      </ul>
+
+      <h2 class="privacy-accent">3. Retensi, Portabilitas, dan Hak untuk Dihapus</h2>
+      <p>VEX sepenuhnya menghormati "Hak untuk Dilupakan" yang diamanatkan oleh protokol privasi regional dan aturan standar pengembang:</p>
+      <p>Log pelanggaran secara rutin dibersihkan untuk menghemat ruang penyimpanan database backend. Jika Anda adalah pengembang game atau pemain yang telemetrinya dicatat dalam sistem kami dan ingin meminta penghapusan data secara menyeluruh, Anda dapat mengajukan permintaan penghapusan dengan membuat tiket operasional di dalam matriks dukungan otomatis kami.</p>
+    </div>
   </div>
 
-  <!-- Footer Menyelaraskan Hak Cipta -->
+  <!-- Shared Modern Footer -->
   <div class="footer">
-    © 2026 VEX Anti-Cheat Ecosystem. All rights reserved.<br>
-    Protected by automated license compliance frameworks. VEX is independent and unaffiliated with Discord Inc. or Roblox Corporation.
+    <span class="lang-en">© 2026 VEX Anti-Cheat Ecosystem. All rights reserved. Protected by license frameworks. Unaffiliated with Discord Inc. or Roblox Corporation.</span>
+    <span class="lang-id">© 2026 Ekosistem VEX Anti-Cheat. Hak cipta dilindungi undang-undang. Dilindungi oleh kerangka kerja lisensi. Tidak berafiliasi dengan Discord Inc. atau Roblox Corporation.</span>
   </div>
 </div>
 
 <script>
-  // Advanced Router Logic based on URL Hash
-  function applySystemRouting() {
-    const activeHash = window.location.hash;
-    
-    // Reset body route tokens
+  // Dynamic Liquid Router Configuration
+  function runLiquidRouter() {
+    const currentHash = window.location.hash;
     document.body.classList.remove('route-terms', 'route-privacy');
     
-    if (activeHash === '#privacy') {
+    // Manage dynamic glow color based on route
+    if (currentHash === '#privacy') {
       document.body.classList.add('route-privacy');
-      document.title = "Privacy Policy — VEX Anti-Cheat";
+      document.documentElement.style.setProperty('--liquid-shadow', 'rgba(255, 145, 0, 0.2)');
+      document.title = "Privacy Policy — VEX";
     } else {
-      // Defaults to terms if empty or explicitly hashed #terms
       document.body.classList.add('route-terms');
-      document.title = "Terms of Service — VEX Anti-Cheat";
+      document.documentElement.style.setProperty('--liquid-shadow', 'rgba(0, 230, 118, 0.2)');
+      document.title = "Terms of Service — VEX";
     }
   }
 
-  // Bind operational hook events
-  window.addEventListener('hashchange', applySystemRouting);
-  window.addEventListener('DOMContentLoaded', applySystemRouting);
+  // Language Manager System
+  function setLanguage(langCode) {
+    document.documentElement.setAttribute('lang', langCode);
+    localStorage.setItem('vex_legal_lang', langCode);
+  }
+
+  // Initialize Configuration on load
+  window.addEventListener('hashchange', runLiquidRouter);
+  window.addEventListener('DOMContentLoaded', () => {
+    runLiquidRouter();
+    
+    // Auto detect language preference
+    const savedLang = localStorage.getItem('vex_legal_lang') || 
+                      (navigator.language.startsWith('id') ? 'id' : 'en');
+    setLanguage(savedLang);
+  });
 </script>
 </body>
 </html>
